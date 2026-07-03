@@ -1,0 +1,1976 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Pro Dan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        /* ----- FONTS & RESET ----- */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap');
+        * {
+            font-family: 'Inter', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0e17;
+            color: #eef2ff;
+            min-height: 100vh;
+            padding: 14px;
+        }
+
+        .main-container {
+            max-width: 440px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #111927, #080c16);
+            border-radius: 32px;
+            padding: 22px 18px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(250, 204, 21, 0.06);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(250, 204, 21, 0.06);
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #facc15, #f59e0b, #facc15);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s ease-in-out infinite;
+            letter-spacing: -0.3px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(250, 204, 21, 0.04);
+            padding: 4px 10px 4px 4px;
+            border-radius: 60px;
+            border: 1px solid rgba(250, 204, 21, 0.06);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 15px;
+            color: #0a0e17;
+            box-shadow: 0 4px 14px rgba(250, 204, 21, 0.25);
+        }
+
+        .user-details .name { font-size: 13px; font-weight: 700; color: #eef2ff; }
+        .user-details .id { font-size: 9px; color: #6b7f9f; }
+
+        .channel-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            border: none;
+            border-radius: 18px;
+            color: #0a0e17;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 18px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 28px rgba(250, 204, 21, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .channel-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.08), transparent);
+            transform: rotate(45deg);
+            animation: btnShine 3s infinite;
+        }
+
+        @keyframes btnShine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .channel-btn:active { transform: scale(0.97); }
+
+        .secret-admin-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(250, 204, 21, 0.03);
+            border: 1px dashed rgba(250, 204, 21, 0.12);
+            border-radius: 14px;
+            color: #6b7f9f;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 18px;
+            transition: all 0.25s;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .secret-admin-btn:hover {
+            background: rgba(250, 204, 21, 0.06);
+            border-color: rgba(250, 204, 21, 0.2);
+            color: #facc15;
+        }
+
+        .secret-admin-btn:active {
+            transform: scale(0.97);
+            background: rgba(250, 204, 21, 0.08);
+            border-color: #facc15;
+            color: #facc15;
+        }
+
+        .secret-admin-btn .hint { color: #2a3f5a; font-size: 9px; }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 14px;
+            color: #eef2ff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(250, 204, 21, 0.15), transparent);
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .market-card {
+            background: rgba(250, 204, 21, 0.02);
+            border-radius: 18px;
+            padding: 14px;
+            border: 1px solid rgba(250, 204, 21, 0.05);
+            transition: all 0.25s;
+            backdrop-filter: blur(6px);
+        }
+
+        .market-card:active {
+            transform: scale(0.96);
+            background: rgba(250, 204, 21, 0.05);
+        }
+
+        .market-card .coin-name {
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #eef2ff;
+        }
+
+        .market-card .coin-status {
+            font-size: 8px;
+            padding: 3px 10px;
+            border-radius: 30px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .market-card .coin-status.active { color: #34d399; background: rgba(52, 211, 153, 0.1); }
+        .market-card .coin-status.buy { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+        .market-card .coin-status.closed { color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
+
+        .market-card .coin-rate {
+            font-size: 26px;
+            font-weight: 900;
+            color: #facc15;
+            margin-top: 6px;
+            text-shadow: 0 0 30px rgba(250, 204, 21, 0.08);
+        }
+
+        .market-card .coin-per { font-size: 10px; color: #6b7f9f; margin-top: 2px; }
+
+        .sell-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            border: none;
+            border-radius: 18px;
+            color: #0a0e17;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 14px 0 12px 0;
+            transition: all 0.2s;
+            box-shadow: 0 4px 30px rgba(250, 204, 21, 0.2);
+        }
+
+        .sell-btn::after { content: ' →'; }
+        .sell-btn:active { transform: scale(0.97); }
+
+        .buy-stop-badge {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 13px;
+            margin: 10px 0 8px 0;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.15);
+        }
+
+        .history-section { margin-top: 18px; }
+
+        .history-table {
+            width: 100%;
+            background: rgba(250, 204, 21, 0.01);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(250, 204, 21, 0.04);
+        }
+
+        .history-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+
+        .history-table th {
+            background: rgba(250, 204, 21, 0.03);
+            padding: 12px 8px;
+            text-align: left;
+            color: #6b7f9f;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 0.4px;
+        }
+
+        .history-table td {
+            padding: 12px 8px;
+            border-top: 1px solid rgba(250, 204, 21, 0.03);
+            color: #eef2ff;
+        }
+
+        .history-table .coin-name { font-weight: 700; color: #facc15; }
+        .history-table .status-pending { color: #fbbf24; font-weight: 600; }
+        .history-table .status-approved { color: #34d399; font-weight: 600; }
+        .history-table .status-rejected { color: #f87171; font-weight: 600; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(14px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 18px;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: linear-gradient(145deg, #111927, #080c16);
+            border-radius: 30px;
+            padding: 24px;
+            max-width: 420px;
+            width: 100%;
+            border: 1px solid rgba(250, 204, 21, 0.06);
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95);
+        }
+
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 18px;
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal .close-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(250, 204, 21, 0.03);
+            border: 1px solid rgba(250, 204, 21, 0.06);
+            border-radius: 16px;
+            color: #6b7f9f;
+            font-weight: 700;
+            margin-top: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal .close-btn:active { transform: scale(0.97); }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7f9f;
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(250, 204, 21, 0.03);
+            border: 1px solid rgba(250, 204, 21, 0.06);
+            border-radius: 16px;
+            color: #eef2ff;
+            font-size: 14px;
+            appearance: none;
+            -webkit-appearance: none;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7f9f' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 40px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #facc15;
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.06);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: #2a3f5a; }
+
+        .file-upload {
+            background: rgba(250, 204, 21, 0.01);
+            border: 2px dashed rgba(250, 204, 21, 0.06);
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-upload:active { transform: scale(0.97); }
+        .file-upload .filename { font-size: 11px; color: #6b7f9f; margin-top: 4px; }
+
+        .send-to-box {
+            background: rgba(250, 204, 21, 0.02);
+            border-radius: 16px;
+            padding: 14px 16px;
+            border: 1px solid rgba(250, 204, 21, 0.04);
+            margin-bottom: 14px;
+        }
+
+        .send-to-box .label {
+            font-size: 10px;
+            color: #6b7f9f;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .send-to-box .username {
+            font-size: 16px;
+            font-weight: 700;
+            color: #facc15;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+
+        .send-to-box .hint { font-size: 10px; color: #6b7f9f; margin-top: 4px; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #34d399, #10b981);
+            border: none;
+            border-radius: 18px;
+            color: #0a0e17;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 28px rgba(52, 211, 153, 0.15);
+        }
+
+        .submit-btn:active { transform: scale(0.97); }
+
+        .payment-icons {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .payment-icons .icon {
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .payment-icons .bkash { background: #e2136e; color: #fff; }
+        .payment-icons .nagad { background: #f26522; color: #fff; }
+        .payment-icons .rocker { background: #8b5cf6; color: #fff; }
+
+        .admin-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .admin-tabs button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-tabs button.active {
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            color: #0a0e17;
+            box-shadow: 0 4px 20px rgba(250, 204, 21, 0.12);
+        }
+
+        .admin-tabs button.inactive {
+            background: rgba(250, 204, 21, 0.03);
+            color: #6b7f9f;
+        }
+
+        .admin-tabs button.inactive:active { transform: scale(0.97); }
+
+        .order-card {
+            background: rgba(250, 204, 21, 0.01);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(250, 204, 21, 0.03);
+        }
+
+        .order-card .order-coin { font-weight: 700; color: #facc15; }
+        .order-card .order-status { font-weight: 700; font-size: 11px; }
+        .order-card .order-details { font-size: 11px; color: #6b7f9f; }
+
+        .order-card .order-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .order-card .order-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .order-card .order-actions button:active { transform: scale(0.95); }
+        .order-card .order-actions .approve-btn { background: #34d399; color: #0a0e17; }
+        .order-card .order-actions .reject-btn { background: #f87171; color: #0a0e17; }
+        .order-card .order-actions .message-btn { background: #38bdf8; color: #0a0e17; }
+
+        .update-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #facc15, #f59e0b);
+            border: none;
+            border-radius: 16px;
+            color: #0a0e17;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .update-btn:active { transform: scale(0.97); }
+
+        .update-btn.secondary {
+            background: linear-gradient(135deg, #38bdf8, #1d4ed8);
+            color: #fff;
+        }
+
+        .delete-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            border: none;
+            border-radius: 16px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:active { transform: scale(0.97); }
+
+        hr {
+            border: none;
+            border-top: 1px solid rgba(250, 204, 21, 0.04);
+            margin: 16px 0;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(250, 204, 21, 0.01); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #facc15; border-radius: 10px; }
+
+        .admin-badge {
+            background: #facc15;
+            color: #0a0e17;
+            font-size: 8px;
+            font-weight: 800;
+            padding: 2px 10px;
+            border-radius: 30px;
+            margin-left: 6px;
+            text-transform: uppercase;
+        }
+
+        .password-input {
+            text-align: center;
+            font-size: 28px !important;
+            letter-spacing: 12px;
+            padding: 16px !important;
+        }
+
+        .password-input::placeholder {
+            letter-spacing: 2px;
+            font-size: 13px;
+            color: #2a3f5a;
+        }
+
+        .error-shake { animation: shake 0.45s ease-in-out; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .admin-lock-icon {
+            font-size: 44px;
+            text-align: center;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .coin-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(250, 204, 21, 0.01);
+            border-radius: 12px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(250, 204, 21, 0.03);
+        }
+
+        .coin-list-item .coin-name { font-weight: 600; color: #eef2ff; }
+        .coin-list-item .coin-rate { color: #facc15; font-weight: 600; }
+        .coin-list-item .coin-sendto {
+            font-size: 9px;
+            color: #34d399;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .coin-list-item .delete-coin-btn {
+            background: #f87171;
+            border: none;
+            color: #0a0e17;
+            padding: 4px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .coin-list-item .delete-coin-btn:active { transform: scale(0.94); }
+
+        .duplicate-warning {
+            background: #f8717108;
+            border: 1px solid #f87171;
+            color: #f87171;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .success-msg {
+            background: #34d39908;
+            border: 1px solid #34d399;
+            color: #34d399;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .fee-info {
+            background: rgba(250, 204, 21, 0.03);
+            border: 1px solid rgba(250, 204, 21, 0.06);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #facc15;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .no-coins-msg {
+            text-align: center;
+            padding: 20px;
+            color: #6b7f9f;
+        }
+        .no-coins-msg .big-icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .price-breakdown {
+            background: rgba(250, 204, 21, 0.02);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid rgba(250, 204, 21, 0.05);
+            margin: 12px 0 16px 0;
+        }
+
+        .price-breakdown .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .price-breakdown .row .label {
+            color: #6b7f9f;
+            font-weight: 500;
+        }
+
+        .price-breakdown .row .value {
+            font-weight: 700;
+            color: #eef2ff;
+        }
+
+        .price-breakdown .row .value.gold { color: #facc15; }
+        .price-breakdown .row .value.green { color: #34d399; }
+        .price-breakdown .row .value.red { color: #f87171; }
+
+        .price-breakdown .divider {
+            border-top: 1px solid rgba(250, 204, 21, 0.04);
+            margin: 6px 0;
+        }
+
+        .price-breakdown .total-row {
+            font-size: 16px;
+            font-weight: 800;
+            padding-top: 8px;
+        }
+
+        .price-breakdown .total-row .value {
+            color: #34d399;
+            font-size: 18px;
+        }
+
+        .coupon-input-box {
+            background: rgba(250, 204, 21, 0.02);
+            border-radius: 16px;
+            padding: 14px 16px;
+            border: 1px solid rgba(250, 204, 21, 0.04);
+            margin-bottom: 14px;
+        }
+
+        .coupon-input-box .label {
+            font-size: 10px;
+            color: #6b7f9f;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .coupon-input-box input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(250, 204, 21, 0.03);
+            border: 1px solid rgba(250, 204, 21, 0.06);
+            border-radius: 12px;
+            color: #eef2ff;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            transition: all 0.2s;
+        }
+
+        .coupon-input-box input:focus {
+            outline: none;
+            border-color: #facc15;
+            box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.06);
+        }
+
+        .coupon-input-box input::placeholder {
+            color: #2a3f5a;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0;
+        }
+
+        .success-modal-icon {
+            font-size: 56px;
+            text-align: center;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .success-modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #34d399;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .success-modal-sub {
+            font-size: 13px;
+            color: #6b7f9f;
+            text-align: center;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .success-modal-details {
+            background: rgba(250, 204, 21, 0.02);
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid rgba(250, 204, 21, 0.04);
+            margin: 10px 0;
+        }
+
+        .success-modal-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+
+        .success-modal-details .detail-row .label {
+            color: #6b7f9f;
+        }
+
+        .success-modal-details .detail-row .value {
+            font-weight: 600;
+            color: #eef2ff;
+        }
+
+        .success-modal-details .detail-row .value.gold { color: #facc15; }
+        .success-modal-details .detail-row .value.green { color: #34d399; }
+        .success-modal-details .detail-row .value.red { color: #f87171; }
+
+        .next-steps {
+            background: rgba(250, 204, 21, 0.03);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-left: 3px solid #facc15;
+        }
+
+        .next-steps .step {
+            font-size: 12px;
+            color: #eef2ff;
+            padding: 3px 0;
+        }
+
+        .next-steps .step .icon { margin-right: 8px; }
+        .next-steps .step .highlight { color: #facc15; font-weight: 600; }
+
+        .msg-preview {
+            background: rgba(250, 204, 21, 0.02);
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid rgba(250, 204, 21, 0.04);
+            margin: 10px 0;
+            font-size: 13px;
+            color: #eef2ff;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .msg-preview .label {
+            font-size: 10px;
+            color: #6b7f9f;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        /* Image upload for admin message */
+        .admin-image-upload {
+            background: rgba(250, 204, 21, 0.01);
+            border: 2px dashed rgba(250, 204, 21, 0.06);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .admin-image-upload:active { transform: scale(0.97); }
+        .admin-image-upload .filename { font-size: 11px; color: #6b7f9f; margin-top: 4px; }
+        .admin-image-upload .preview-img {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>⭐ Pro Dan</h1>
+            <div class="user-info">
+                <div class="user-details">
+                    <div class="name" id="user-name">@Guest</div>
+                    <div class="id" id="user-id">ID: Loading...</div>
+                </div>
+                <div class="user-avatar" id="user-avatar">G</div>
+            </div>
+        </div>
+
+        <!-- CHANNEL BUTTON -->
+        <button class="channel-btn" onclick="joinChannel()">📢 Join Official Channel</button>
+
+        <!-- SYSTEM SETTINGS -->
+        <button class="secret-admin-btn" onclick="openAdminPassword()">
+            <span class="icon">⚙️</span> System Settings
+            <span class="hint">• v2.0</span>
+        </button>
+
+        <!-- MARKET RATES -->
+        <div class="section-title">📊 Live Market Rates</div>
+        <div class="market-grid" id="market-grid">
+            <div style="grid-column:1/-1; text-align:center; padding:30px; color:#6b7f9f;">
+                <div style="font-size:44px; margin-bottom:8px;">📭</div>
+                <p>No coins available</p>
+                <p style="font-size:11px; margin-top:4px;">Please add coins from System Settings</p>
+            </div>
+        </div>
+
+        <!-- BUY STOP BADGE -->
+        <div class="buy-stop-badge" id="buy-stop-badge" style="display: none;">🔴 BUY STOP</div>
+
+        <!-- SELL COINS -->
+        <button class="sell-btn" onclick="openSell()">💰 Sell Coins</button>
+
+        <!-- HISTORY -->
+        <div class="history-section">
+            <div class="section-title">📜 Recent History</div>
+            <div class="history-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Coin</th>
+                            <th>Amount</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        <tr><td colspan="5" style="text-align:center; color:#6b7f9f; padding:20px;">No history yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SELL MODAL ===== -->
+    <div class="modal-overlay" id="sell-modal">
+        <div class="modal">
+            <h3>💰 Sell Coins</h3>
+
+            <div class="form-group">
+                <label>Select Coin</label>
+                <select id="sell-coin-select">
+                    <option value="">No coins available</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Price Rate</label>
+                <div style="background:rgba(250,204,21,0.02); padding:14px 16px; border-radius:16px; border:1px solid rgba(250,204,21,0.04);">
+                    <span style="font-size:28px; font-weight:900; color:#facc15;" id="sell-rate-display">0</span>
+                    <span style="color:#6b7f9f; font-size:12px;"> ৳ / 1K</span>
+                </div>
+            </div>
+
+            <div id="sell-send-to" style="display:none;">
+                <div class="send-to-box">
+                    <div class="label">📤 Send Coins To</div>
+                    <div class="username" id="sell-send-to-username">-</div>
+                    <div class="hint">📋 Copy this username and transfer coins in the game.</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="amount-label">💰 Amount to Sell</label>
+                <input type="number" id="amount-input" placeholder="e.g., 77000" min="1000" value="77000" oninput="updatePriceBreakdown()">
+                <div style="font-size:9px; color:#6b7f9f; margin-top:4px;">Minimum <span id="min-amount-display">1000</span> coins</div>
+            </div>
+
+            <!-- PRICE BREAKDOWN -->
+            <div class="price-breakdown" id="price-breakdown">
+                <div class="row">
+                    <span class="label">📊 Price Rate</span>
+                    <span class="value gold" id="pb-rate">0.00 ৳ / 1K</span>
+                </div>
+                <div class="row">
+                    <span class="label">📦 Amount</span>
+                    <span class="value" id="pb-amount">0</span>
+                </div>
+                <div class="row">
+                    <span class="label">💰 Total Value</span>
+                    <span class="value gold" id="pb-total">0.00 ৳</span>
+                </div>
+                <div class="divider"></div>
+                <div class="row">
+                    <span class="label">📉 Withdrawal Fee</span>
+                    <span class="value red" id="pb-fee">-5.00 ৳</span>
+                </div>
+                <div class="divider"></div>
+                <div class="row total-row">
+                    <span class="label">💵 You'll Receive</span>
+                    <span class="value green" id="pb-receive">0.00 ৳</span>
+                </div>
+            </div>
+
+            <!-- COUPON CODE - User Input -->
+            <div class="coupon-input-box">
+                <div class="label">🎫 Coupon Code</div>
+                <input type="text" id="coupon-input" placeholder="Enter coupon code (e.g., FLIN-4TRC-K7T6)" value="">
+                <div style="font-size:9px; color:#6b7f9f; margin-top:4px;">💡 আপনার কুপন কোড এখানে লিখুন</div>
+            </div>
+
+            <div class="form-group">
+                <label>💳 Payment Method</label>
+                <select id="payment-method">
+                    <option value="bKash">bKash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="Rocket ">Rocket </option>
+                </select>
+                <div class="payment-icons">
+                    <span class="icon bkash">bKash</span>
+                    <span class="icon nagad">Nagad</span>
+                    <span class="icon rocker">Rocket </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="payment-label">Enter your payment number / ID</label>
+                <input type="text" id="payment-input" placeholder="01XXXXXXXXX or Rocket  ID">
+            </div>
+
+            <div class="form-group" id="username-group">
+                <label>👤 Your Username (Sender)</label>
+                <input type="text" placeholder="@username or ID" id="sender-username" value="@user">
+                <div style="font-size:9px; color:#6b7f9f; margin-top:4px;">Enter the username from which you sent the coins.</div>
+            </div>
+
+            <div class="form-group">
+                <label>📸 Upload Screenshot</label>
+                <div class="file-upload" onclick="document.getElementById('file-input').click()">
+                    <div style="font-size:26px; margin-bottom:4px;">📤</div>
+                    <div style="color:#6b7f9f; font-size:12px;">Choose File</div>
+                    <div class="filename" id="file-name">No file chosen</div>
+                    <input type="file" id="file-input" style="display:none;" accept="image/*" onchange="handleFileSelect(event)">
+                </div>
+            </div>
+
+            <button class="submit-btn" onclick="submitSell()">Confirm & Submit ✓</button>
+            <button class="close-btn" onclick="closeSell()">Close</button>
+        </div>
+    </div>
+
+    <!-- ===== SUCCESS MODAL ===== -->
+    <div class="modal-overlay" id="success-modal">
+        <div class="modal">
+            <span class="success-modal-icon">✅</span>
+            <div class="success-modal-title">Request Submitted!</div>
+            <div class="success-modal-sub">
+                Your sale request has been registered.
+            </div>
+
+            <div class="success-modal-details" id="success-details">
+                <div class="detail-row">
+                    <span class="label">Coin</span>
+                    <span class="value gold" id="success-coin">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Amount</span>
+                    <span class="value" id="success-amount">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Rate</span>
+                    <span class="value gold" id="success-rate">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Fee</span>
+                    <span class="value red" id="success-fee">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">You'll Receive</span>
+                    <span class="value green" id="success-receive">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Coupon Code</span>
+                    <span class="value gold" id="success-coupon">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Payment</span>
+                    <span class="value" id="success-payment">-</span>
+                </div>
+            </div>
+
+            <div class="next-steps">
+                <div class="step"><span class="icon">⏳</span> Wait for Admin verification.</div>
+                <div class="step"><span class="icon">🔍</span> Admin will check the transfer from <span class="highlight">Coupon</span>.</div>
+                <div class="step"><span class="icon">💳</span> Payment will be sent to your number within <span class="highlight">1-30 minutes</span>.</div>
+                <div class="step" style="color:#6b7f9f; font-size:11px; margin-top:4px;">(আপনার পেমেন্ট ১-৩০ মিনিটের ভেতরে আপনার নম্বরে পৌঁছে যাবে!)</div>
+            </div>
+
+            <button class="close-btn" onclick="closeSuccess()">Close</button>
+        </div>
+    </div>
+
+    <!-- ===== PASSWORD MODAL ===== -->
+    <div class="modal-overlay" id="password-modal">
+        <div class="modal">
+            <span class="admin-lock-icon">🔐</span>
+            <h3 style="text-align:center;">System Access</h3>
+            <p style="color:#6b7f9f; text-align:center; font-size:13px; margin-bottom:18px;">Enter system password to continue</p>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="password-input" id="admin-password" placeholder="••••" maxlength="10" autofocus>
+            </div>
+            <button class="submit-btn" onclick="verifyPassword()">Unlock 🔓</button>
+            <button class="close-btn" onclick="closePassword()">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN MODAL ===== -->
+    <div class="modal-overlay" id="admin-modal">
+        <div class="modal">
+            <h3>⚙️ System Control</h3>
+            <div class="admin-tabs">
+                <button class="active" id="tab-rates-btn" onclick="switchTab('rates')">📊 Coins</button>
+                <button class="inactive" id="tab-orders-btn" onclick="switchTab('orders')">📋 Requests</button>
+            </div>
+            <div id="admin-rates">
+                <div class="success-msg" id="success-msg">✅ Done!</div>
+                <div class="duplicate-warning" id="duplicate-warning">⚠️ Duplicate coins detected! Click "Remove Duplicates" below.</div>
+
+                <div class="form-group">
+                    <label>Coin Name</label>
+                    <input type="text" id="admin-coin-name" placeholder="e.g., NIVA" value="NIVA">
+                </div>
+                <div class="form-group">
+                    <label>Rate (per 1000)</label>
+                    <input type="number" id="admin-coin-rate" placeholder="2.00" step="0.01" value="2.00">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="admin-coin-status">
+                        <option value="active">🟢 Active</option>
+                        <option value="buy">🔴 Buy Stop</option>
+                        <option value="closed">🟡 Closed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Send To (Username)</label>
+                    <input type="text" id="admin-send-to" placeholder="victoria.anderson1096" value="victoria.anderson1096">
+                </div>
+                <div class="form-group">
+                    <label>Minimum Amount (coins)</label>
+                    <input type="number" id="admin-min-amount" placeholder="1000" value="1000" step="100">
+                    <div style="font-size:9px; color:#6b7f9f; margin-top:4px;">💡 ইউজার এই পরিমাণের কম কয়েন সেল করতে পারবে না</div>
+                </div>
+                <div class="form-group">
+                    <label>Withdrawal Fee (৳)</label>
+                    <input type="number" id="admin-fee-amount" placeholder="5" value="5" step="0.5">
+                </div>
+                <button class="update-btn" onclick="updateCoin()">➕ Add / Update Coin</button>
+                <hr>
+                <div class="form-group">
+                    <label>📋 Manage Coins</label>
+                    <div id="coin-list-container" style="max-height:200px; overflow-y:auto; margin-top:8px;">
+                        <p style="color:#6b7f9f; text-align:center; padding:10px;">No coins added yet.</p>
+                    </div>
+                </div>
+                <button class="update-btn secondary" onclick="removeDuplicates()">🔄 Remove Duplicates</button>
+                <button class="delete-btn" onclick="deleteAllCoins()">🗑️ Delete All Coins</button>
+                <hr>
+                <div class="form-group">
+                    <label>Selling Status</label>
+                    <select id="admin-selling-status">
+                        <option value="true">🟢 Open</option>
+                        <option value="false">🔴 Closed</option>
+                    </select>
+                </div>
+                <button class="update-btn secondary" onclick="updateSellingStatus()">Update Status</button>
+
+                <hr>
+                <div style="background:rgba(56,189,248,0.03); border-radius:12px; padding:12px; border:1px solid rgba(56,189,248,0.06);">
+                    <div style="font-size:12px; font-weight:700; color:#38bdf8; margin-bottom:8px;">📨 ইউজারকে মেসেজ + ছবি পাঠান</div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                        <label>ইউজার আইডি</label>
+                        <input type="text" id="admin-user-id" placeholder="ইউজার আইডি দিন (123456789)">
+                    </div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                        <label>মেসেজ</label>
+                        <textarea id="admin-message-text" placeholder="ইউজারকে পাঠানোর মেসেজ লিখুন...">✅ আপনার সেল রিকোয়েস্ট সম্পন্ন হয়েছে!
+
+📊 Coin: NIVA
+💰 Amount: 77,000
+💵 Received: 152.85 ৳
+
+ধন্যবাদ! 🎉</textarea>
+                    </div>
+                    <div class="form-group" style="margin-bottom:10px;">
+                        <label>📸 ছবি আপলোড করুন (ঐচ্ছিক)</label>
+                        <div class="admin-image-upload" onclick="document.getElementById('admin-image-input').click()">
+                            <div style="font-size:24px; margin-bottom:4px;">🖼️</div>
+                            <div style="color:#6b7f9f; font-size:12px;">Choose Image</div>
+                            <div class="filename" id="admin-image-name">No image chosen</div>
+                            <img id="admin-image-preview" class="preview-img" />
+                            <input type="file" id="admin-image-input" style="display:none;" accept="image/*" onchange="handleAdminImageSelect(event)">
+                        </div>
+                    </div>
+                    <div class="msg-preview" id="msg-preview">
+                        <span class="label">📋 প্রিভিউ</span>
+                        <div id="preview-content">✅ আপনার সেল রিকোয়েস্ট সম্পন্ন হয়েছে!
+
+📊 Coin: NIVA
+💰 Amount: 77,000
+💵 Received: 152.85 ৳
+
+ধন্যবাদ! 🎉</div>
+                        <div id="preview-image-container" style="margin-top:8px; display:none;">
+                            <img id="preview-image" style="max-width:100%; max-height:150px; border-radius:8px;" />
+                        </div>
+                    </div>
+                    <button class="update-btn secondary" onclick="sendMessageToUser()" style="margin-top:4px;">📨 মেসেজ + ছবি পাঠান</button>
+                </div>
+            </div>
+            <div id="admin-orders" style="display:none;">
+                <div id="orders-list" style="max-height:400px; overflow-y:auto;">
+                    <p style="color:#6b7f9f; text-align:center; padding:20px;">Loading orders...</p>
+                </div>
+            </div>
+            <button class="close-btn" onclick="closeAdmin()">Close</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, onSnapshot, setDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot as onSnapshotCollection, deleteField } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCEd8rL6hQaZ9xbYVSLiyyw5SJGa76oT1c",
+            authDomain: "coin-75b34.firebaseapp.com",
+            projectId: "coin-75b34",
+            storageBucket: "coin-75b34.firebasestorage.app",
+            messagingSenderId: "849615161114",
+            appId: "1:849615161114:web:0426a4821adc8d2b618ea3",
+            measurementId: "G-F8CL2P1VYE"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        const ADMIN_PASSWORD = "1002";
+        let marketData = {};
+        let isSellingOpen = true;
+        let currentUser = null;
+        let orders = [];
+        let coinKeys = [];
+        let coinSendTo = {};
+        let withdrawalFee = 5;
+        let minAmount = 1000;
+        let adminImageData = null;
+        let adminImageName = '';
+
+        // ----- TELEGRAM USER -----
+        try {
+            const tg = window.Telegram.WebApp;
+            tg.ready();
+            tg.expand();
+            const user = tg.initDataUnsafe?.user || {};
+            currentUser = user;
+            const firstName = user.first_name || 'Guest';
+            const username = user.username || 'Guest';
+            const userId = user.id || '000000';
+            document.getElementById('user-name').textContent = '@' + username;
+            document.getElementById('user-avatar').textContent = firstName.charAt(0).toUpperCase();
+            document.getElementById('user-id').textContent = 'ID: ' + userId.toString().slice(0, 5) + '...';
+            document.getElementById('sender-username').value = '@' + username;
+        } catch (e) {}
+
+        // ----- UPDATE PRICE BREAKDOWN -----
+        window.updatePriceBreakdown = function() {
+            const key = document.getElementById('sell-coin-select').value;
+            if (!key || key === '') {
+                document.getElementById('pb-rate').textContent = '0.00 ৳ / 1K';
+                document.getElementById('pb-amount').textContent = '0';
+                document.getElementById('pb-total').textContent = '0.00 ৳';
+                document.getElementById('pb-receive').textContent = '0.00 ৳';
+                return;
+            }
+            const rate = marketData[key] || 0;
+            const amount = parseInt(document.getElementById('amount-input').value) || 0;
+            const fee = withdrawalFee;
+
+            const total = (amount / 1000) * rate;
+            const receive = Math.max(0, total - fee);
+
+            document.getElementById('pb-rate').textContent = rate.toFixed(2) + ' ৳ / 1K';
+            document.getElementById('pb-amount').textContent = amount.toLocaleString();
+            document.getElementById('pb-total').textContent = total.toFixed(2) + ' ৳';
+            document.getElementById('pb-fee').textContent = '-' + fee.toFixed(2) + ' ৳';
+            document.getElementById('pb-receive').textContent = receive.toFixed(2) + ' ৳';
+        };
+
+        // ----- FIRESTORE: MARKET -----
+        onSnapshot(doc(db, "rates", "market"), (doc) => {
+            if (doc.exists()) {
+                const data = doc.data();
+                marketData = data;
+                isSellingOpen = data.isSellingOpen !== undefined ? data.isSellingOpen : true;
+                if (data.withdrawalFee !== undefined) {
+                    withdrawalFee = data.withdrawalFee;
+                    document.getElementById('admin-fee-amount').value = withdrawalFee;
+                }
+                if (data.minAmount !== undefined) {
+                    minAmount = data.minAmount;
+                    document.getElementById('admin-min-amount').value = minAmount;
+                    document.getElementById('min-amount-display').textContent = minAmount;
+                }
+                let rawKeys = Object.keys(data).filter(key => key !== 'isSellingOpen' && key !== 'withdrawalFee' && key !== 'minAmount' && !key.includes('_status') && !key.includes('_sendTo'));
+                coinSendTo = {};
+                rawKeys.forEach(key => {
+                    const sendToKey = key + '_sendTo';
+                    if (data[sendToKey]) { coinSendTo[key] = data[sendToKey]; } else { coinSendTo[key] = 'N/A'; }
+                });
+                let seen = new Set();
+                coinKeys = [];
+                rawKeys.forEach(key => {
+                    let upperKey = key.toUpperCase();
+                    if (!seen.has(upperKey)) { seen.add(upperKey);
+                        coinKeys.push(key); }
+                });
+                if (rawKeys.length !== coinKeys.length) {
+                    document.getElementById('duplicate-warning').style.display = 'block';
+                } else {
+                    document.getElementById('duplicate-warning').style.display = 'none';
+                }
+                updateMarket();
+                updateSellModal();
+                updateCoinList();
+            } else {
+                document.getElementById('market-grid').innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:30px; color:#6b7f9f;">
+                        <div style="font-size:44px; margin-bottom:8px;">📭</div>
+                        <p>No coins available</p>
+                        <p style="font-size:11px; margin-top:4px;">Please add coins from System Settings</p>
+                    </div>
+                `;
+                document.getElementById('coin-list-container').innerHTML = `
+                    <p style="color:#6b7f9f; text-align:center; padding:10px;">No coins added yet.</p>
+                `;
+            }
+        });
+
+        // ----- FIRESTORE: ORDERS -----
+        const ordersQuery = query(collection(db, "orders"), orderBy("timestamp", "desc"));
+        onSnapshotCollection(ordersQuery, (snapshot) => {
+            orders = [];
+            snapshot.forEach((doc) => { orders.push({ id: doc.id, ...doc.data() }); });
+            updateHistory();
+            if (document.getElementById('admin-orders').style.display !== 'none') { updateOrdersList(); }
+        });
+
+        // ----- HELPERS -----
+        function showSuccess(msg) {
+            const el = document.getElementById('success-msg');
+            el.textContent = '✅ ' + msg;
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 3000);
+        }
+
+        // ----- UPDATE MARKET UI -----
+        function updateMarket() {
+            const grid = document.getElementById('market-grid');
+            let html = '';
+            let hasBuy = false;
+            if (coinKeys.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:30px; color:#6b7f9f;">
+                        <div style="font-size:44px; margin-bottom:8px;">📭</div>
+                        <p>No coins available</p>
+                        <p style="font-size:11px; margin-top:4px;">Please add coins from System Settings</p>
+                    </div>
+                `;
+                return;
+            }
+            coinKeys.forEach(key => {
+                const rate = marketData[key] || 0;
+                const status = marketData[key + '_status'] || 'active';
+                const isBuy = status === 'buy';
+                if (isBuy) hasBuy = true;
+                let statusText = status === 'active' ? (isSellingOpen ? 'Active' : 'Closed') : 'Buy';
+                let statusClass = status === 'active' ? (isSellingOpen ? 'active' : 'closed') : 'buy';
+                html += `<div class="market-card"><div class="coin-name">${key}<span class="coin-status ${statusClass}">${statusText}</span></div><div class="coin-rate">${rate}৳</div><div class="coin-per">Per 1,000 Coins</div></div>`;
+            });
+            grid.innerHTML = html;
+            document.getElementById('buy-stop-badge').style.display = hasBuy ? 'block' : 'none';
+        }
+
+        // ----- UPDATE COIN LIST (admin) -----
+        function updateCoinList() {
+            const container = document.getElementById('coin-list-container');
+            if (coinKeys.length === 0) {
+                container.innerHTML = '<p style="color:#6b7f9f; text-align:center; padding:10px;">No coins added yet.</p>';
+                return;
+            }
+            let html = '';
+            coinKeys.forEach(key => {
+                const rate = marketData[key] || 0;
+                const sendTo = coinSendTo[key] || 'N/A';
+                html += `<div class="coin-list-item"><span class="coin-name">${key}</span><span class="coin-rate">${rate}৳</span><span class="coin-sendto">📤 ${sendTo}</span><button class="delete-coin-btn" onclick="window.deleteCoin('${key}')">✕</button></div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // ----- UPDATE HISTORY -----
+        function updateHistory() {
+            const tbody = document.getElementById('history-body');
+            if (orders.length === 0) {
+                tbody.innerHTML =
+                    '<tr><td colspan="5" style="text-align:center; color:#6b7f9f; padding:20px;">No history yet</td></tr>';
+                return;
+            }
+            let html = '';
+            orders.slice(0, 15).forEach(order => {
+                const statusClass = order.status === 'approved' ? 'status-approved' : order.status === 'rejected' ?
+                    'status-rejected' : 'status-pending';
+                const statusText = order.status === 'approved' ? '✅ Approved' : order.status === 'rejected' ?
+                    '❌ Rejected' : '⏳ Pending';
+                const total = order.totalAfterFee || order.total || 0;
+                html += `<tr>
+                    <td>${new Date(order.timestamp?.seconds * 1000).toLocaleString()}</td>
+                    <td><span class="coin-name">${order.coin}</span></td>
+                    <td>${order.amount.toLocaleString()}</td>
+                    <td>${total.toFixed(2)} ৳</td>
+                    <td><span class="${statusClass}">${statusText}</span></td>
+                </tr>`;
+            });
+            tbody.innerHTML = html;
+        }
+
+        // ----- UPDATE SELL MODAL -----
+        function updateSellModal() {
+            const select = document.getElementById('sell-coin-select');
+            select.innerHTML = '';
+            if (coinKeys.length === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'No coins available';
+                select.appendChild(option);
+                return;
+            }
+            coinKeys.forEach(key => {
+                const option = document.createElement('option');
+                option.value = key;
+                const rate = marketData[key] || 0;
+                option.textContent = key + ' (' + rate + ' ৳)';
+                select.appendChild(option);
+            });
+            updateSellForm();
+        }
+
+        function updateSellForm() {
+            const key = document.getElementById('sell-coin-select').value;
+            if (!key || key === '') {
+                document.getElementById('sell-rate-display').textContent = '0';
+                document.getElementById('sell-send-to').style.display = 'none';
+                document.getElementById('pb-rate').textContent = '0.00 ৳ / 1K';
+                document.getElementById('pb-amount').textContent = '0';
+                document.getElementById('pb-total').textContent = '0.00 ৳';
+                document.getElementById('pb-receive').textContent = '0.00 ৳';
+                return;
+            }
+            const rate = marketData[key] || 0;
+            const sendTo = coinSendTo[key] || 'N/A';
+            document.getElementById('sell-rate-display').textContent = rate;
+            const sendToBox = document.getElementById('sell-send-to');
+            sendToBox.style.display = 'block';
+            const usernameEl = document.getElementById('sell-send-to-username');
+            usernameEl.textContent = sendTo;
+            usernameEl.style.color = sendTo === 'N/A' ? '#f87171' : '#34d399';
+            document.getElementById('min-amount-display').textContent = minAmount;
+            document.getElementById('amount-input').min = minAmount;
+            if (parseInt(document.getElementById('amount-input').value) < minAmount) {
+                document.getElementById('amount-input').value = minAmount;
+            }
+            updatePriceBreakdown();
+        }
+
+        // ----- SELL MODAL OPEN/CLOSE -----
+        function openSell() {
+            if (!isSellingOpen) {
+                alert('🔴 Selling is currently closed. Please try again later.');
+                return;
+            }
+            document.getElementById('sell-modal').classList.add('active');
+            updateSellModal();
+        }
+
+        function closeSell() { document.getElementById('sell-modal').classList.remove('active'); }
+
+        function closeSuccess() { document.getElementById('success-modal').classList.remove('active'); }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) { document.getElementById('file-name').textContent = file.name; }
+        }
+
+        // ----- ADMIN IMAGE HANDLE -----
+        window.handleAdminImageSelect = function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                adminImageName = file.name;
+                document.getElementById('admin-image-name').textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    adminImageData = e.target.result;
+                    const preview = document.getElementById('admin-image-preview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    // Show in preview section
+                    const previewContainer = document.getElementById('preview-image-container');
+                    const previewImg = document.getElementById('preview-image');
+                    previewImg.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        // ----- SUBMIT SELL -----
+        async function submitSell() {
+            const coinKey = document.getElementById('sell-coin-select').value;
+            if (!coinKey || coinKey === '') { alert('Please select a coin.'); return; }
+
+            const amount = parseInt(document.getElementById('amount-input').value);
+            if (!amount || amount < minAmount) { alert('Minimum amount is ' + minAmount + ' coins.'); return; }
+
+            const payment = document.getElementById('payment-method').value;
+            const paymentNumberInput = document.getElementById('payment-input').value;
+            if (!paymentNumberInput) { alert('Please enter your payment ' + (payment === 'Rocket ' ? 'ID' : 'number')); return; }
+
+            const sender = document.getElementById('sender-username')?.value || '';
+            if (!sender) { alert('Please enter your username.'); return; }
+
+            const coupon = document.getElementById('coupon-input').value.trim() || 'N/A';
+
+            const rate = marketData[coinKey] || 0;
+            const fee = withdrawalFee;
+            const total = (amount / 1000) * rate;
+            const afterFee = Math.max(0, total - fee);
+
+            const userId = currentUser?.id || 'unknown';
+            const userName = currentUser?.username || 'unknown';
+            const sendTo = coinSendTo[coinKey] || 'N/A';
+
+            try {
+                await addDoc(collection(db, "orders"), {
+                    userId: String(userId),
+                    userName: userName,
+                    coin: coinKey,
+                    amount: amount,
+                    rate: rate,
+                    fee: fee,
+                    total: total,
+                    totalAfterFee: afterFee,
+                    coupon: coupon,
+                    payment: payment,
+                    paymentNumber: paymentNumberInput,
+                    sender: sender,
+                    sendTo: sendTo,
+                    status: 'pending',
+                    timestamp: new Date()
+                });
+
+                document.getElementById('success-coin').textContent = coinKey;
+                document.getElementById('success-amount').textContent = amount.toLocaleString();
+                document.getElementById('success-rate').textContent = rate.toFixed(2) + ' ৳ / 1K';
+                document.getElementById('success-fee').textContent = '-' + fee.toFixed(2) + ' ৳';
+                document.getElementById('success-receive').textContent = afterFee.toFixed(2) + ' ৳';
+                document.getElementById('success-coupon').textContent = coupon;
+                document.getElementById('success-payment').textContent = payment + ' (' + paymentNumberInput + ')';
+
+                closeSell();
+                document.getElementById('success-modal').classList.add('active');
+
+                document.getElementById('file-name').textContent = 'No file chosen';
+                document.getElementById('file-input').value = '';
+                document.getElementById('coupon-input').value = '';
+
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+
+        // ----- JOIN CHANNEL -----
+        function joinChannel() { window.open('https://t.me/in_tx_bd', '_blank'); }
+
+        // ----- ADMIN PASSWORD -----
+        function openAdminPassword() {
+            document.getElementById('password-modal').classList.add('active');
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-password').focus();
+        }
+
+        function closePassword() { document.getElementById('password-modal').classList.remove('active'); }
+
+        function verifyPassword() {
+            const password = document.getElementById('admin-password').value;
+            const input = document.getElementById('admin-password');
+            if (password === ADMIN_PASSWORD) { closePassword();
+                openAdmin(); } else {
+                input.classList.add('error-shake');
+                input.style.borderColor = '#f87171';
+                input.value = '';
+                setTimeout(() => { input.classList.remove('error-shake');
+                    input.style.borderColor = ''; }, 500);
+                alert('❌ Wrong password!');
+            }
+        }
+        document.getElementById('admin-password').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { verifyPassword(); }
+        });
+
+        // ----- ADMIN MODAL -----
+        function openAdmin() {
+            document.getElementById('admin-modal').classList.add('active');
+            document.getElementById('admin-selling-status').value = isSellingOpen ? 'true' : 'false';
+            document.getElementById('admin-fee-amount').value = withdrawalFee;
+            document.getElementById('admin-min-amount').value = minAmount;
+            updateOrdersList();
+            const msgText = document.getElementById('admin-message-text');
+            document.getElementById('preview-content').textContent = msgText.value;
+            msgText.addEventListener('input', function() {
+                document.getElementById('preview-content').textContent = this.value;
+            });
+            // Reset image
+            adminImageData = null;
+            adminImageName = '';
+            document.getElementById('admin-image-name').textContent = 'No image chosen';
+            document.getElementById('admin-image-preview').style.display = 'none';
+            document.getElementById('preview-image-container').style.display = 'none';
+            document.getElementById('admin-image-input').value = '';
+        }
+
+        function closeAdmin() { document.getElementById('admin-modal').classList.remove('active'); }
+
+        function switchTab(tab) {
+            document.getElementById('admin-rates').style.display = tab === 'rates' ? 'block' : 'none';
+            document.getElementById('admin-orders').style.display = tab === 'orders' ? 'block' : 'none';
+            document.getElementById('tab-rates-btn').className = tab === 'rates' ? 'active' : 'inactive';
+            document.getElementById('tab-orders-btn').className = tab === 'orders' ? 'active' : 'inactive';
+            if (tab === 'orders') { updateOrdersList(); }
+        }
+
+        // ----- UPDATE ORDERS LIST (admin) -----
+        function updateOrdersList() {
+            const container = document.getElementById('orders-list');
+            if (orders.length === 0) {
+                container.innerHTML = '<p style="color:#6b7f9f; text-align:center; padding:20px;">No orders yet</p>';
+                return;
+            }
+            let html = '';
+            orders.forEach(order => {
+                const statusColor = order.status === 'approved' ? '#34d399' : order.status === 'rejected' ?
+                    '#f87171' : '#fbbf24';
+                html += `<div class="order-card">
+                    <div class="order-header">
+                        <span class="order-coin">${order.coin}</span>
+                        <span class="order-status" style="color:${statusColor}">${order.status.toUpperCase()}</span>
+                    </div>
+                    <div class="order-details">
+                        <div>User: @${order.userName} (${order.userId})</div>
+                        <div>Amount: ${order.amount.toLocaleString()} | Rate: ${order.rate || 0} ৳/1K</div>
+                        <div>Total: ${order.total?.toFixed(2) || '0.00'} ৳ | Fee: ${order.fee || 0} ৳</div>
+                        <div>After Fee: ${order.totalAfterFee?.toFixed(2) || '0.00'} ৳</div>
+                        <div>Coupon: <span style="color:#facc15;font-weight:600;">${order.coupon || 'N/A'}</span></div>
+                        <div>Payment: ${order.payment} (${order.paymentNumber})</div>
+                        ${order.sender ? `<div>Sender: ${order.sender}</div>` : ''}
+                        ${order.sendTo ? `<div>📤 Send To: ${order.sendTo}</div>` : ''}
+                        <div style="font-size:9px; color:#2a3f5a; margin-top:4px;">${new Date(order.timestamp?.seconds * 1000).toLocaleString()}</div>
+                    </div>
+                    ${order.status === 'pending' ? `<div class="order-actions">
+                        <button class="approve-btn" onclick="window.approveOrder('${order.id}')">✅ Approve</button>
+                        <button class="reject-btn" onclick="window.rejectOrder('${order.id}')">❌ Reject</button>
+                        <button class="message-btn" onclick="window.openMessageModal('${order.userId}','${order.coin}','${order.amount}','${order.totalAfterFee}')">📨 মেসেজ</button>
+                    </div>` : ''}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // ----- OPEN MESSAGE MODAL FROM ORDER -----
+        window.openMessageModal = function(userId, coin, amount, total) {
+            const msgBox = document.getElementById('admin-message-text');
+            msgBox.value = `✅ আপনার সেল রিকোয়েস্ট সম্পন্ন হয়েছে!
+
+📊 Coin: ${coin}
+💰 Amount: ${parseInt(amount).toLocaleString()}
+💵 Received: ${parseFloat(total).toFixed(2)} ৳
+
+ধন্যবাদ! 🎉`;
+            document.getElementById('preview-content').textContent = msgBox.value;
+            document.getElementById('admin-user-id').value = userId;
+            switchTab('rates');
+            document.getElementById('admin-rates').scrollIntoView({ behavior: 'smooth' });
+            const msgSection = document.querySelector('[style*="background:rgba(56,189,248,0.03)"]');
+            if (msgSection) {
+                msgSection.style.borderColor = '#facc15';
+                setTimeout(() => { msgSection.style.borderColor = 'rgba(56,189,248,0.06)'; }, 3000);
+            }
+            // Reset image
+            adminImageData = null;
+            adminImageName = '';
+            document.getElementById('admin-image-name').textContent = 'No image chosen';
+            document.getElementById('admin-image-preview').style.display = 'none';
+            document.getElementById('preview-image-container').style.display = 'none';
+            document.getElementById('admin-image-input').value = '';
+        };
+
+        // ----- SEND MESSAGE + IMAGE TO USER (via Telegram Bot) -----
+        window.sendMessageToUser = async function() {
+            const userId = document.getElementById('admin-user-id').value.trim();
+            const message = document.getElementById('admin-message-text').value.trim();
+
+            if (!userId) {
+                alert('❌ Please enter a User ID.');
+                return;
+            }
+            if (!message) {
+                alert('❌ Please enter a message.');
+                return;
+            }
+
+            const BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+
+            try {
+                // First send the message
+                const msgResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: userId,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+
+                const msgData = await msgResponse.json();
+
+                if (!msgData.ok) {
+                    alert('❌ মেসেজ পাঠাতে ব্যর্থ হয়েছে!\n' + (msgData.description || 'Unknown error'));
+                    return;
+                }
+
+                // If there's an image, send it as photo
+                if (adminImageData) {
+                    // Convert base64 to blob
+                    const blob = await fetch(adminImageData).then(res => res.blob());
+                    const formData = new FormData();
+                    formData.append('chat_id', userId);
+                    formData.append('photo', blob, adminImageName || 'image.jpg');
+                    formData.append('caption', '📸 Payment Proof');
+
+                    const photoResponse = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const photoData = await photoResponse.json();
+                    if (!photoData.ok) {
+                        alert('⚠️ মেসেজ পাঠানো হয়েছে কিন্তু ছবি পাঠাতে ব্যর্থ হয়েছে!\n' + (photoData.description ||
+                        'Unknown error'));
+                        return;
+                    }
+                }
+
+                alert('✅ মেসেজ সফলভাবে পাঠানো হয়েছে!');
+
+                // Reset image after sending
+                adminImageData = null;
+                adminImageName = '';
+                document.getElementById('admin-image-name').textContent = 'No image chosen';
+                document.getElementById('admin-image-preview').style.display = 'none';
+                document.getElementById('preview-image-container').style.display = 'none';
+                document.getElementById('admin-image-input').value = '';
+
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        };
+
+        // ----- APPROVE / REJECT ORDERS -----
+        async function approveOrder(orderId) {
+            if (confirm('✅ Approve this order?\nPayment will be sent to the user.')) {
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { status: 'approved', approvedAt: new Date() });
+                    alert('✅ Order approved! User will be notified.');
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+        }
+
+        async function rejectOrder(orderId) {
+            if (confirm('❌ Reject this order?')) {
+                try {
+                    await updateDoc(doc(db, "orders", orderId), { status: 'rejected', rejectedAt: new Date() });
+                    alert('❌ Order rejected!');
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+        }
+
+        // ----- ADMIN: UPDATE COIN -----
+        async function updateCoin() {
+            const name = document.getElementById('admin-coin-name').value.toUpperCase().trim();
+            const rate = parseFloat(document.getElementById('admin-coin-rate').value);
+            const status = document.getElementById('admin-coin-status').value;
+            const sendTo = document.getElementById('admin-send-to').value.trim() || 'N/A';
+            const fee = parseFloat(document.getElementById('admin-fee-amount').value) || 5;
+            const minAmt = parseInt(document.getElementById('admin-min-amount').value) || 1000;
+
+            if (!name || !rate) { alert('Please fill all fields'); return; }
+
+            try {
+                await setDoc(doc(db, "rates", "market"), { [name]: rate }, { merge: true });
+                await setDoc(doc(db, "rates", "market"), { [name + '_status']: status }, { merge: true });
+                await setDoc(doc(db, "rates", "market"), { [name + '_sendTo']: sendTo }, { merge: true });
+                await setDoc(doc(db, "rates", "market"), { withdrawalFee: fee }, { merge: true });
+                await setDoc(doc(db, "rates", "market"), { minAmount: minAmt }, { merge: true });
+
+                coinSendTo[name] = sendTo;
+                withdrawalFee = fee;
+                minAmount = minAmt;
+                document.getElementById('min-amount-display').textContent = minAmt;
+
+                showSuccess(name + ' updated! Fee: ' + fee + '৳ | Min: ' + minAmt);
+                updateMarket();
+                updateSellModal();
+                updateCoinList();
+                closeAdmin();
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        // ----- ADMIN: UPDATE SELLING STATUS -----
+        async function updateSellingStatus() {
+            const status = document.getElementById('admin-selling-status').value === 'true';
+            try {
+                await updateDoc(doc(db, "rates", "market"), { isSellingOpen: status });
+                alert('✅ Selling status updated to: ' + (status ? 'Open' : 'Closed'));
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        // ----- ADMIN: DELETE COIN -----
+        async function deleteCoin(coinName) {
+            if (confirm('Delete ' + coinName + '?')) {
+                try {
+                    const docRef = doc(db, "rates", "market");
+                    await updateDoc(docRef, {
+                        [coinName]: deleteField(),
+                        [coinName + '_status']: deleteField(),
+                        [coinName + '_sendTo']: deleteField()
+                    });
+                    showSuccess(coinName + ' deleted!');
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+        }
+
+        // ----- ADMIN: DELETE ALL COINS -----
+        async function deleteAllCoins() {
+            if (confirm('⚠️ Delete ALL coins? This cannot be undone!')) {
+                try {
+                    const docRef = doc(db, "rates", "market");
+                    const data = marketData;
+                    const updates = {};
+                    Object.keys(data).forEach(key => {
+                        if (key !== 'isSellingOpen' && key !== 'withdrawalFee' && key !== 'minAmount' && !key
+                            .includes('_status') && !key.includes('_sendTo')) {
+                            updates[key] = deleteField();
+                            updates[key + '_status'] = deleteField();
+                            updates[key + '_sendTo'] = deleteField();
+                        }
+                    });
+                    await updateDoc(docRef, updates);
+                    showSuccess('All coins deleted!');
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+        }
+
+        // ----- ADMIN: REMOVE DUPLICATES -----
+        async function removeDuplicates() {
+            if (confirm('Remove duplicate coins?')) {
+                try {
+                    const docRef = doc(db, "rates", "market");
+                    const data = marketData;
+                    let seen = new Set();
+                    let toDelete = [];
+                    Object.keys(data).forEach(key => {
+                        if (key !== 'isSellingOpen' && key !== 'withdrawalFee' && key !== 'minAmount' && !key
+                            .includes('_status') && !key.includes('_sendTo')) {
+                            let upperKey = key.toUpperCase();
+                            if (seen.has(upperKey)) { toDelete.push(key); } else { seen.add(upperKey); }
+                        }
+                    });
+                    if (toDelete.length === 0) { alert('No duplicates found!'); return; }
+                    const updates = {};
+                    toDelete.forEach(key => { updates[key] = deleteField();
+                        updates[key + '_status'] = deleteField();
+                        updates[key + '_sendTo'] = deleteField(); });
+                    await updateDoc(docRef, updates);
+                    showSuccess('Removed ' + toDelete.length + ' duplicate coin(s)!');
+                } catch (e) { alert('Error: ' + e.message); }
+            }
+        }
+
+        // ----- GLOBAL WINDOW EXPOSURE -----
+        window.openSell = openSell;
+        window.closeSell = closeSell;
+        window.submitSell = submitSell;
+        window.handleFileSelect = handleFileSelect;
+        window.handleAdminImageSelect = handleAdminImageSelect;
+        window.joinChannel = joinChannel;
+        window.openAdminPassword = openAdminPassword;
+        window.closePassword = closePassword;
+        window.verifyPassword = verifyPassword;
+        window.openAdmin = openAdmin;
+        window.closeAdmin = closeAdmin;
+        window.switchTab = switchTab;
+        window.updateCoin = updateCoin;
+        window.updateSellingStatus = updateSellingStatus;
+        window.approveOrder = approveOrder;
+        window.rejectOrder = rejectOrder;
+        window.deleteCoin = deleteCoin;
+        window.deleteAllCoins = deleteAllCoins;
+        window.removeDuplicates = removeDuplicates;
+        window.updatePriceBreakdown = updatePriceBreakdown;
+        window.sendMessageToUser = sendMessageToUser;
+        window.openMessageModal = openMessageModal;
+
+        // ----- MODAL CLOSE ON OVERLAY -----
+        document.getElementById('sell-modal').addEventListener('click', function(e) { if (e.target === this) closeSell(); });
+        document.getElementById('admin-modal').addEventListener('click', function(e) { if (e.target === this) closeAdmin(); });
+        document.getElementById('password-modal').addEventListener('click', function(e) { if (e.target === this)
+                closePassword(); });
+        document.getElementById('success-modal').addEventListener('click', function(e) { if (e.target === this)
+                closeSuccess(); });
+        document.getElementById('sell-coin-select').addEventListener('change', updateSellForm);
+        document.getElementById('payment-method').addEventListener('change', function() {
+            const method = this.value;
+            const label = document.getElementById('payment-label');
+            if (method === 'Rocket ') {
+                label.textContent = 'Enter your Rocket  ID';
+                document.getElementById('payment-input').placeholder = 'Rocket  ID';
+            } else {
+                label.textContent = 'Enter your ' + method + ' number';
+                document.getElementById('payment-input').placeholder = '01XXXXXXXXX';
+            }
+        });
+
+        // ----- INIT -----
+        updateMarket();
+        updateSellModal();
+    </script>
+</body>
+</html>আর 
